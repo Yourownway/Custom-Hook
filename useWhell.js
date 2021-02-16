@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import Axios from "axios";
 export default function useWhell(eWhell) {
   const [hash, setHash] = useState(window.location.hash);
   const [index, setIndex] = useState(0);
@@ -13,9 +12,13 @@ export default function useWhell(eWhell) {
   }, []);
 
   useEffect(() => {
-    window.addEventListener("popstate", (e) => setPopState(e));
-    setIndex(Array.findIndex((hash) => hash === window.location.hash));
-  }, [popState]);
+    let listener = (e) => {
+      setPopState(e);
+      setIndex(Array.findIndex((hash) => hash === window.location.hash));
+    };
+    window.addEventListener("popstate", listener);
+    return () => media.removeEventListener("popstate", listener);
+  }, [popState, index]);
 
   useEffect(() => {
     setIndex(Array.findIndex((hash) => hash === window.location.hash));
@@ -36,7 +39,7 @@ export default function useWhell(eWhell) {
       setIndex(0);
       setHash(window.location.hash);
     }
+    return;
   }, [eWhell]);
-
   return hash;
 }
